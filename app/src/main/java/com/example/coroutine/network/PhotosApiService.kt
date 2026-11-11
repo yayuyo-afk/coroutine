@@ -1,0 +1,30 @@
+package com.example.coroutine.network
+
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
+import retrofit2.Retrofit
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import retrofit2.http.GET
+
+private const val BASE_URL = "https://android-kotlin-fun-mars-server.appspot.com/"
+
+private val json = Json {
+    ignoreUnknownKeys = true
+    coerceInputValues = true
+}
+
+private val retrofit = Retrofit.Builder()
+    .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+    .baseUrl(BASE_URL)
+    .build()
+
+interface PhotosApiService {
+    @GET("photos")
+    suspend fun getPhotos(): List<Photo>
+}
+
+object PhotosApi {
+    val retrofitService: PhotosApiService by lazy {
+        retrofit.create(PhotosApiService::class.java)
+    }
+}
